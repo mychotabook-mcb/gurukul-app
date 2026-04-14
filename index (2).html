@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little Stars – Worksheet Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sun: #FFB830;
+      --sky: #4FC3F7;
+      --grass: #66BB6A;
+      --rose: #F06292;
+      --violet: #9575CD;
+      --bg: #FFF8F0;
+      --card: #FFFFFF;
+      --text: #2D2D2D;
+      --muted: #888;
+      --radius: 18px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── NAV ── */
+    nav {
+      background: linear-gradient(135deg, #9575CD 0%, #4FC3F7 100%);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .nav-logo { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; color: white; display: flex; align-items: center; gap: 8px; }
+    .nav-logo span { font-size: 1.8rem; }
+    .nav-tabs { display: flex; gap: 4px; }
+    .nav-tab {
+      background: rgba(255,255,255,0.15); border: none; border-radius: 10px;
+      color: white; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+      padding: 8px 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .nav-tab:hover, .nav-tab.active { background: rgba(255,255,255,0.3); }
+
+    /* ── PAGES ── */
+    .page { display: none; padding: 28px 20px; max-width: 960px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ── HEADINGS ── */
+    .page-title {
+      font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800;
+      margin-bottom: 6px; color: var(--violet);
+    }
+    .page-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 28px; }
+
+    /* ── CARDS ── */
+    .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: none; border-radius: 12px; padding: 10px 20px;
+      font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-primary { background: var(--violet); color: white; }
+    .btn-primary:hover { background: #7E57C2; transform: translateY(-1px); }
+    .btn-success { background: var(--grass); color: white; }
+    .btn-success:hover { background: #43A047; }
+    .btn-danger { background: #EF5350; color: white; }
+    .btn-danger:hover { background: #C62828; }
+    .btn-sky { background: var(--sky); color: white; }
+    .btn-sky:hover { background: #0288D1; }
+    .btn-sun { background: var(--sun); color: white; }
+    .btn-sm { padding: 6px 14px; font-size: 0.82rem; border-radius: 8px; }
+    .btn-outline { background: transparent; border: 2px solid var(--violet); color: var(--violet); }
+    .btn-outline:hover { background: var(--violet); color: white; }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 0.9rem; color: var(--text); }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 10px 14px; border: 2px solid #E0E0E0;
+      border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 0.95rem;
+      transition: border 0.2s; background: white;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none; border-color: var(--violet);
+    }
+    .form-textarea { resize: vertical; min-height: 60px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-block; padding: 2px 10px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-play { background: #FFE0B2; color: #E65100; }
+    .badge-nursery { background: #F3E5F5; color: #6A1B9A; }
+    .badge-junior { background: #E3F2FD; color: #0D47A1; }
+    .badge-senior { background: #E8F5E9; color: #1B5E20; }
+
+    /* ── STATS ROW ── */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: white; border-radius: var(--radius); padding: 20px; text-align: center;
+      box-shadow: var(--shadow); border-top: 4px solid var(--violet);
+    }
+    .stat-card.s1 { border-color: var(--sun); }
+    .stat-card.s2 { border-color: var(--sky); }
+    .stat-card.s3 { border-color: var(--grass); }
+    .stat-card.s4 { border-color: var(--rose); }
+    .stat-num { font-family: 'Baloo 2', cursive; font-size: 2.2rem; font-weight: 800; }
+    .stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+    /* ── TABLE ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th { background: #F3E5F5; color: var(--violet); font-weight: 800; padding: 12px 14px; text-align: left; }
+    td { padding: 11px 14px; border-bottom: 1px solid #F0F0F0; vertical-align: middle; }
+    tr:hover td { background: #FAFAFA; }
+
+    /* ── ACTIVITY CHECKBOX GRID ── */
+    .act-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .act-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: #F3E5F5; border-radius: 10px; padding: 6px 12px;
+      border: 2px solid transparent; cursor: pointer; transition: all 0.15s;
+      font-size: 0.88rem; font-weight: 600;
+    }
+    .act-chip input[type="checkbox"] { accent-color: var(--violet); width: 16px; height: 16px; }
+    .act-chip:has(input:checked) { background: #EDE7F6; border-color: var(--violet); }
+    .act-chip.wrong-chip { background: #FFEBEE; }
+    .act-chip.wrong-chip:has(input:checked) { background: #FFCDD2; border-color: #EF5350; }
+
+    /* ── PARENT FORM ── */
+    .parent-hero {
+      background: linear-gradient(135deg, #9575CD, #4FC3F7);
+      border-radius: var(--radius); padding: 28px; color: white; margin-bottom: 24px; text-align: center;
+    }
+    .parent-hero h2 { font-family: 'Baloo 2', cursive; font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+    .parent-hero p { opacity: 0.9; font-size: 0.95rem; }
+
+    .page-block {
+      background: white; border-radius: 14px; padding: 18px 20px;
+      margin-bottom: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      border-left: 5px solid var(--violet);
+    }
+    .page-block-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .page-num { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.1rem; color: var(--violet); }
+    .page-topic { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── LINK BOX ── */
+    .link-box {
+      display: flex; align-items: center; gap: 10px; background: #F3E5F5;
+      border-radius: 10px; padding: 12px 16px; margin-top: 12px;
+    }
+    .link-box input { flex: 1; border: none; background: transparent; font-family: 'Nunito'; font-size: 0.9rem; color: var(--text); }
+    .link-box input:focus { outline: none; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      z-index: 200; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; border-radius: var(--radius); padding: 28px;
+      max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: popIn 0.25s ease;
+    }
+    @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-title { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; margin-bottom: 18px; color: var(--violet); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      background: #323232; color: white; border-radius: 12px; padding: 12px 20px;
+      font-size: 0.9rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      transform: translateY(80px); opacity: 0; transition: all 0.3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #388E3C; }
+    .toast.error { background: #D32F2F; }
+
+    /* ── MISC ── */
+    .section-label { font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
+    .divider { border: none; border-top: 1px solid #F0F0F0; margin: 20px 0; }
+    .chip-class { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+    .tag { background: #EDE7F6; color: var(--violet); padding: 3px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .report-wrong-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0F0F0; }
+    .progress-bar { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--violet), var(--sky)); border-radius: 4px; transition: width 0.4s; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+      .nav-tab { padding: 6px 10px; font-size: 0.8rem; }
+      .page-title { font-size: 1.5rem; }
+    }
+
+    /* ── LEVEL SELECTOR ── */
+    .level-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
+    .level-btn {
+      aspect-ratio: 1; border: 2px solid #E0E0E0; border-radius: 10px; background: white;
+      font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: all 0.15s; color: var(--text);
+    }
+    .level-btn:hover { border-color: var(--violet); color: var(--violet); }
+    .level-btn.active { background: var(--violet); border-color: var(--violet); color: white; }
+    .level-btn.has-data { background: #EDE7F6; border-color: var(--violet); }
+
+    /* FIREBASE CONFIG NOTE */
+    .config-note { background: #FFF3E0; border-left: 4px solid var(--sun); border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>⭐</span> Little Stars</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('admin')">🛠 Admin</button>
+    <button class="nav-tab" onclick="showPage('links')">🔗 Links</button>
+    <button class="nav-tab" onclick="showPage('reports')">📊 Reports</button>
+    <button class="nav-tab" onclick="showPage('parent')" id="parentTabBtn" style="display:none;">📝 Parent Form</button>
+  </div>
+</nav>
+
+<!-- ══════════════════ ADMIN PAGE ══════════════════ -->
+<div class="page active" id="page-admin">
+  <div class="page-title">📋 Worksheet Form Builder</div>
+  <div class="page-sub">Level, page aur activities manage karein. Parents ko link share karein.</div>
+
+  <div class="config-note">
+    ⚙️ <strong>Firebase Setup:</strong> Neeche <code>firebaseConfig</code> section mein apna Firebase project ka config paste karein. Phir app fully live ho jaayega!
+  </div>
+
+  <!-- FILTER ROW -->
+  <div class="card">
+    <div class="form-row" style="align-items:end; gap:12px;">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Class</label>
+        <select class="form-select" id="adminClass" onchange="renderAdminLevels()">
+          <option value="play">🌸 Play Group</option>
+          <option value="nursery">🌼 Nursery</option>
+          <option value="junior">🌿 Junior KG</option>
+          <option value="senior">🌳 Senior KG</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Level (1–48)</label>
+        <select class="form-select" id="adminLevel" onchange="loadAdminForm()"></select>
+      </div>
+      <div style="padding-bottom:0">
+        <button class="btn btn-primary" onclick="openAddPageModal()">➕ Page Add करें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGES LIST -->
+  <div id="adminPagesList"></div>
+</div>
+
+<!-- ══════════════════ LINKS PAGE ══════════════════ -->
+<div class="page" id="page-links">
+  <div class="page-title">🔗 Parent Links</div>
+  <div class="page-sub">Student add करें और उनका unique form link share करें।</div>
+
+  <div class="card">
+    <div class="section-label">नया Student जोड़ें</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">बच्चे का नाम</label>
+        <input class="form-input" id="studentName" placeholder="जैसे: Aryan Shah" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Class</label>
+        <select class="form-select" id="studentClass">
+          <option value="play">Play Group</option>
+          <option value="nursery">Nursery</option>
+          <option value="junior">Junior KG</option>
+          <option value="senior">Senior KG</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Level</label>
+        <select class="form-select" id="studentLevel"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parent का नाम</label>
+        <input class="form-input" id="parentName" placeholder="जैसे: Priya Shah" />
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="addStudent()">✅ Student Add करें</button>
+  </div>
+
+  <!-- STUDENTS TABLE -->
+  <div class="card">
+    <div class="section-label">सभी Students</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>बच्चे का नाम</th>
+            <th>Class</th>
+            <th>Level</th>
+            <th>Parent</th>
+            <th>Link</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          <tr><td colspan="6"><div class="empty-state"><div class="icon">👶</div>अभी कोई student नहीं है।</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ REPORTS PAGE ══════════════════ -->
+<div class="page" id="page-reports">
+  <div class="page-title">📊 Reports & Analytics</div>
+  <div class="page-sub">Wrong answers का data देखें और अगली worksheet plan करें।</div>
+
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card s1"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Submissions</div></div>
+    <div class="stat-card s2"><div class="stat-num" id="statStudents">0</div><div class="stat-label">Students</div></div>
+    <div class="stat-card s3"><div class="stat-num" id="statWrong">0</div><div class="stat-label">Wrong Activities</div></div>
+    <div class="stat-card s4"><div class="stat-num" id="statLevels">0</div><div class="stat-label">Levels Covered</div></div>
+  </div>
+
+  <!-- FILTER -->
+  <div class="card">
+    <div class="form-row">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Class filter</label>
+        <select class="form-select" id="reportClass" onchange="loadReports()">
+          <option value="">सभी Classes</option>
+          <option value="play">Play Group</option>
+          <option value="nursery">Nursery</option>
+          <option value="junior">Junior KG</option>
+          <option value="senior">Senior KG</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Student filter</label>
+        <select class="form-select" id="reportStudent" onchange="loadReports()">
+          <option value="">सभी Students</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportsContent"></div>
+</div>
+
+<!-- ══════════════════ PARENT FORM PAGE ══════════════════ -->
+<div class="page" id="page-parent">
+  <div class="parent-hero">
+    <h2>📝 Worksheet Review Form</h2>
+    <p id="parentHeroSub">जो activities में गलती हुई, उन पर ✓ लगाएं</p>
+  </div>
+
+  <div id="parentStudentInfo" class="card" style="display:none;">
+    <div class="form-row" style="align-items:center;">
+      <div>
+        <div class="form-label">बच्चे का नाम</div>
+        <div id="piName" style="font-size:1.2rem; font-weight:800;"></div>
+      </div>
+      <div>
+        <div class="form-label">Class & Level</div>
+        <div id="piLevel" style="font-weight:700; color:var(--violet);"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="parentFormContent">
+    <div class="empty-state"><div class="icon">🔗</div><p>Valid link खोलें या URL में ?student=ID डालें।</p></div>
+  </div>
+
+  <div id="parentSubmitBar" style="display:none; text-align:center; padding:16px 0 32px;">
+    <button class="btn btn-success" style="font-size:1.1rem; padding:14px 36px;" onclick="submitParentForm()">
+      ✅ Submit करें
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════ ADD PAGE MODAL ══════════════ -->
+<div class="modal-overlay" id="addPageModal">
+  <div class="modal">
+    <div class="modal-title">📄 नया Page / Activity जोड़ें</div>
+    <div class="form-group">
+      <label class="form-label">Page Number</label>
+      <input class="form-input" id="mpPageNum" type="number" placeholder="जैसे: 12" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Page Topic (optional)</label>
+      <input class="form-input" id="mpTopic" placeholder="जैसे: Shapes - Circle" />
+    </div>
+    <div class="section-label" style="margin-top:12px;">Activities (1–5)</div>
+    <div id="modalActivities"></div>
+    <button class="btn btn-outline btn-sm" onclick="addModalActivity()" style="margin-top:8px;">➕ Activity जोड़ें</button>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addPageModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePage()">💾 Save करें</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PAGE MODAL -->
+<div class="modal-overlay" id="editPageModal">
+  <div class="modal">
+    <div class="modal-title">✏️ Page Edit करें</div>
+    <div class="form-group">
+      <label class="form-label">Page Number</label>
+      <input class="form-input" id="epPageNum" type="number" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Page Topic</label>
+      <input class="form-input" id="epTopic" />
+    </div>
+    <div class="section-label" style="margin-top:12px;">Activities</div>
+    <div id="editActivities"></div>
+    <button class="btn btn-outline btn-sm" onclick="addEditActivity()" style="margin-top:8px;">➕ Activity जोड़ें</button>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('editPageModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="updatePage()">💾 Update करें</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════
+     FIREBASE + APP LOGIC
+══════════════════════════════════════════════════ -->
+<script type="module">
+// ─────────────────────────────────────────────────────
+//  🔥 FIREBASE CONFIG — apna config yahan paste karein
+// ─────────────────────────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, push, onValue, remove, update }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCcQAax8FF3LIlPgijnSRO-ExMlL-962gU",
+  authDomain: "mcb---gurukul.firebaseapp.com",
+  databaseURL: "https://mcb---gurukul-default-rtdb.firebaseio.com",
+  projectId: "mcb---gurukul",
+  storageBucket: "mcb---gurukul.firebasestorage.app",
+  messagingSenderId: "443079241103",
+  appId: "1:443079241103:web:85520434debb02fa6deffa",
+  measurementId: "G-GNN5MRYF2J"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ─── Helpers ───
+window.showToast = (msg, type='') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+};
+window.showPage = (p) => {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  event?.target?.classList.add('active');
+  if (p === 'reports') loadReports();
+  if (p === 'links') renderStudentsTable();
+};
+window.openModal  = id => document.getElementById(id).classList.add('open');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+// ─── Level selects ───
+function fillLevelSelect(selId) {
+  const sel = document.getElementById(selId);
+  if (!sel) return;
+  sel.innerHTML = '';
+  for (let i = 1; i <= 48; i++) {
+    sel.innerHTML += `<option value="${i}">Level ${i}</option>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────
+//  ADMIN — Form Builder
+// ─────────────────────────────────────────────────────
+window.renderAdminLevels = () => {
+  fillLevelSelect('adminLevel');
+  loadAdminForm();
+};
+
+window.loadAdminForm = async () => {
+  const cls   = document.getElementById('adminClass').value;
+  const level = document.getElementById('adminLevel').value;
+  const snap  = await get(ref(db, `forms/${cls}/level${level}`));
+  const data  = snap.val() || {};
+  renderAdminPages(data, cls, level);
+};
+
+function renderAdminPages(data, cls, level) {
+  const container = document.getElementById('adminPagesList');
+  const pages = Object.entries(data).sort((a,b) => a[1].pageNum - b[1].pageNum);
+  if (!pages.length) {
+    container.innerHTML = `<div class="empty-state"><div class="icon">📄</div><p>इस level में अभी कोई page नहीं है। ऊपर से Add करें।</p></div>`;
+    return;
+  }
+  container.innerHTML = pages.map(([id, pg]) => `
+    <div class="page-block">
+      <div class="page-block-header">
+        <div>
+          <span class="page-num">📄 Page ${pg.pageNum}</span>
+          <span class="page-topic" style="margin-left:10px;">${pg.topic || ''}</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sky btn-sm" onclick='openEditPage("${cls}","${level}","${id}")'>✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick='deletePage("${cls}","${level}","${id}")'>🗑 Delete</button>
+        </div>
+      </div>
+      <div class="act-grid">
+        ${(pg.activities || []).map((act, i) => `
+          <div class="act-chip"><span>Q${i+1}: ${act}</span></div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── Add Page Modal ───
+let modalActCount = 0;
+window.openAddPageModal = () => {
+  modalActCount = 0;
+  document.getElementById('mpPageNum').value = '';
+  document.getElementById('mpTopic').value   = '';
+  document.getElementById('modalActivities').innerHTML = '';
+  addModalActivity();
+  openModal('addPageModal');
+};
+window.addModalActivity = () => {
+  modalActCount++;
+  const d = document.createElement('div');
+  d.className = 'form-group';
+  d.innerHTML = `
+    <label class="form-label">Activity ${modalActCount}</label>
+    <div style="display:flex;gap:8px;">
+      <input class="form-input modal-act-input" placeholder="जैसे: Circle the correct shape" />
+      <button class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()">✕</button>
+    </div>`;
+  document.getElementById('modalActivities').appendChild(d);
+};
+window.savePage = async () => {
+  const cls    = document.getElementById('adminClass').value;
+  const level  = document.getElementById('adminLevel').value;
+  const pageNum = parseInt(document.getElementById('mpPageNum').value);
+  const topic   = document.getElementById('mpTopic').value.trim();
+  const acts    = [...document.querySelectorAll('.modal-act-input')]
+                    .map(i => i.value.trim()).filter(Boolean);
+  if (!pageNum) { showToast('Page number डालें!','error'); return; }
+  if (!acts.length) { showToast('कम से कम 1 activity डालें!','error'); return; }
+
+  const pRef = push(ref(db, `forms/${cls}/level${level}`));
+  await set(pRef, { pageNum, topic, activities: acts });
+  closeModal('addPageModal');
+  showToast('Page save हो गया! ✅','success');
+  loadAdminForm();
+};
+
+// ─── Edit Page Modal ───
+let editingCls, editingLevel, editingPageId;
+window.openEditPage = async (cls, level, pageId) => {
+  editingCls = cls; editingLevel = level; editingPageId = pageId;
+  const snap = await get(ref(db, `forms/${cls}/level${level}/${pageId}`));
+  const pg   = snap.val();
+  document.getElementById('epPageNum').value = pg.pageNum;
+  document.getElementById('epTopic').value   = pg.topic || '';
+  const cont = document.getElementById('editActivities');
+  cont.innerHTML = '';
+  (pg.activities || []).forEach((act, i) => {
+    const d = document.createElement('div');
+    d.className = 'form-group';
+    d.innerHTML = `
+      <label class="form-label">Activity ${i+1}</label>
+      <div style="display:flex;gap:8px;">
+        <input class="form-input edit-act-input" value="${act}" />
+        <button class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()">✕</button>
+      </div>`;
+    cont.appendChild(d);
+  });
+  openModal('editPageModal');
+};
+window.addEditActivity = () => {
+  const cont = document.getElementById('editActivities');
+  const num  = cont.querySelectorAll('.edit-act-input').length + 1;
+  const d    = document.createElement('div');
+  d.className = 'form-group';
+  d.innerHTML = `
+    <label class="form-label">Activity ${num}</label>
+    <div style="display:flex;gap:8px;">
+      <input class="form-input edit-act-input" placeholder="Activity..." />
+      <button class="btn btn-danger btn-sm" onclick="this.parentElement.parentElement.remove()">✕</button>
+    </div>`;
+  cont.appendChild(d);
+};
+window.updatePage = async () => {
+  const pageNum = parseInt(document.getElementById('epPageNum').value);
+  const topic   = document.getElementById('epTopic').value.trim();
+  const acts    = [...document.querySelectorAll('.edit-act-input')]
+                    .map(i => i.value.trim()).filter(Boolean);
+  if (!pageNum || !acts.length) { showToast('Data incomplete!','error'); return; }
+  await update(ref(db, `forms/${editingCls}/level${editingLevel}/${editingPageId}`),
+    { pageNum, topic, activities: acts });
+  closeModal('editPageModal');
+  showToast('Update हो गया! ✅','success');
+  loadAdminForm();
+};
+window.deletePage = async (cls, level, pageId) => {
+  if (!confirm('क्या आप इस page को delete करना चाहते हैं?')) return;
+  await remove(ref(db, `forms/${cls}/level${level}/${pageId}`));
+  showToast('Page delete हो गया।');
+  loadAdminForm();
+};
+
+// ─────────────────────────────────────────────────────
+//  LINKS — Students
+// ─────────────────────────────────────────────────────
+window.addStudent = async () => {
+  const name  = document.getElementById('studentName').value.trim();
+  const cls   = document.getElementById('studentClass').value;
+  const level = document.getElementById('studentLevel').value;
+  const pname = document.getElementById('parentName').value.trim();
+  if (!name || !pname) { showToast('Name fill karein!','error'); return; }
+
+  const sRef = push(ref(db, 'students'));
+  await set(sRef, { name, class: cls, level: parseInt(level), parentName: pname,
+                    createdAt: Date.now() });
+  document.getElementById('studentName').value = '';
+  document.getElementById('parentName').value  = '';
+  showToast('Student add ho gaya! ✅','success');
+  renderStudentsTable();
+};
+
+async function renderStudentsTable() {
+  const snap = await get(ref(db, 'students'));
+  const data = snap.val() || {};
+  const tbody = document.getElementById('studentsTableBody');
+  const rows  = Object.entries(data);
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">👶</div>अभी कोई student नहीं है।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(([id, s]) => {
+    const link = `${location.origin}${location.pathname}?student=${id}`;
+    return `
+      <tr>
+        <td><strong>${s.name}</strong></td>
+        <td><span class="badge badge-${s.class}">${classLabel(s.class)}</span></td>
+        <td><span class="tag">Level ${s.level}</span></td>
+        <td>${s.parentName}</td>
+        <td>
+          <div class="link-box" style="padding:6px 10px;">
+            <input readonly value="${link}" id="link-${id}" style="font-size:0.8rem;" />
+            <button class="btn btn-sm btn-primary" onclick="copyLink('${id}')">Copy</button>
+          </div>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="deleteStudent('${id}')">🗑</button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  // fill report student dropdown
+  const rSel = document.getElementById('reportStudent');
+  rSel.innerHTML = `<option value="">सभी Students</option>` +
+    rows.map(([id,s]) => `<option value="${id}">${s.name}</option>`).join('');
+}
+
+window.copyLink = (id) => {
+  document.getElementById('link-'+id).select();
+  document.execCommand('copy');
+  showToast('Link copy हो गया! 🔗','success');
+};
+window.deleteStudent = async (id) => {
+  if (!confirm('Student delete करें?')) return;
+  await remove(ref(db, `students/${id}`));
+  showToast('Student delete हो गया।');
+  renderStudentsTable();
+};
+function classLabel(c) {
+  return { play:'Play', nursery:'Nursery', junior:'Junior KG', senior:'Senior KG' }[c] || c;
+}
+
+// ─────────────────────────────────────────────────────
+//  PARENT FORM
+// ─────────────────────────────────────────────────────
+async function loadParentForm() {
+  const params    = new URLSearchParams(location.search);
+  const studentId = params.get('student');
+  if (!studentId) return;
+
+  // Show parent tab
+  document.getElementById('parentTabBtn').style.display = '';
+
+  // Switch to parent page
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-parent').classList.add('active');
+
+  const sSnap = await get(ref(db, `students/${studentId}`));
+  if (!sSnap.exists()) {
+    document.getElementById('parentFormContent').innerHTML =
+      `<div class="empty-state"><div class="icon">❌</div><p>Student नहीं मिला।</p></div>`;
+    return;
+  }
+  const student = sSnap.val();
+  document.getElementById('parentHeroSub').textContent = `${student.name} की worksheet review करें`;
+  document.getElementById('parentStudentInfo').style.display = '';
+  document.getElementById('piName').textContent  = student.name;
+  document.getElementById('piLevel').textContent = `${classLabel(student.class)} — Level ${student.level}`;
+
+  // load form for this class+level
+  const formSnap = await get(ref(db, `forms/${student.class}/level${student.level}`));
+  const formData = formSnap.val() || {};
+  const pages    = Object.entries(formData).sort((a,b) => a[1].pageNum - b[1].pageNum);
+
+  if (!pages.length) {
+    document.getElementById('parentFormContent').innerHTML =
+      `<div class="empty-state"><div class="icon">📭</div><p>इस level के लिए अभी form नहीं बना है।</p></div>`;
+    return;
+  }
+
+  document.getElementById('parentFormContent').innerHTML = pages.map(([pid, pg]) => `
+    <div class="page-block">
+      <div class="page-block-header">
+        <span class="page-num">📄 Page ${pg.pageNum}</span>
+        <span class="page-topic">${pg.topic || ''}</span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:8px;">जो activities में <strong>गलती</strong> हुई उन पर tick करें:</p>
+      <div class="act-grid">
+        ${(pg.activities || []).map((act, i) => `
+          <label class="act-chip wrong-chip">
+            <input type="checkbox" name="wrong" data-page="${pid}" data-act="${i}" data-label="${act}" />
+            Q${i+1}: ${act}
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('parentSubmitBar').style.display = '';
+  window._currentStudentId = studentId;
+  window._currentStudent   = student;
+}
+
+window.submitParentForm = async () => {
+  const boxes = document.querySelectorAll('input[name="wrong"]:checked');
+  if (!boxes.length) {
+    if (!confirm('कोई wrong activity select नहीं की। फिर भी submit करें?')) return;
+  }
+
+  const wrongItems = [...boxes].map(cb => ({
+    pageId   : cb.dataset.page,
+    actIndex : parseInt(cb.dataset.act),
+    actLabel : cb.dataset.label
+  }));
+
+  const submissionRef = push(ref(db, 'submissions'));
+  await set(submissionRef, {
+    studentId   : window._currentStudentId,
+    studentName : window._currentStudent.name,
+    class       : window._currentStudent.class,
+    level       : window._currentStudent.level,
+    wrongItems,
+    submittedAt : Date.now()
+  });
+
+  document.getElementById('parentFormContent').innerHTML = `
+    <div class="empty-state" style="padding:60px 20px;">
+      <div class="icon">🎉</div>
+      <h3 style="font-family:'Baloo 2',cursive;font-size:1.5rem;color:var(--violet);">Submit हो गया!</h3>
+      <p style="margin-top:8px;">Teacher को data मिल गया। बच्चे को शाबाशी दें! ⭐</p>
+    </div>`;
+  document.getElementById('parentSubmitBar').style.display = 'none';
+  showToast('Form submit हो गया! ✅','success');
+};
+
+// ─────────────────────────────────────────────────────
+//  REPORTS
+// ─────────────────────────────────────────────────────
+window.loadReports = async () => {
+  const filterCls = document.getElementById('reportClass').value;
+  const filterStu = document.getElementById('reportStudent').value;
+
+  const snap = await get(ref(db, 'submissions'));
+  let subs   = Object.values(snap.val() || {});
+
+  if (filterCls) subs = subs.filter(s => s.class === filterCls);
+  if (filterStu) subs = subs.filter(s => s.studentId === filterStu);
+
+  // stats
+  const uniqueStudents = new Set(subs.map(s => s.studentId)).size;
+  const totalWrong     = subs.reduce((a,s) => a + (s.wrongItems?.length||0), 0);
+  const uniqueLevels   = new Set(subs.map(s => `${s.class}_${s.level}`)).size;
+  document.getElementById('statTotal').textContent    = subs.length;
+  document.getElementById('statStudents').textContent = uniqueStudents;
+  document.getElementById('statWrong').textContent    = totalWrong;
+  document.getElementById('statLevels').textContent   = uniqueLevels;
+
+  if (!subs.length) {
+    document.getElementById('reportsContent').innerHTML =
+      `<div class="empty-state"><div class="icon">📭</div><p>अभी कोई submission नहीं है।</p></div>`;
+    return;
+  }
+
+  // group by student
+  const byStudent = {};
+  subs.forEach(s => {
+    if (!byStudent[s.studentId]) byStudent[s.studentId] = { ...s, allWrong: [] };
+    byStudent[s.studentId].allWrong.push(...(s.wrongItems||[]));
+  });
+
+  document.getElementById('reportsContent').innerHTML = Object.entries(byStudent).map(([sid, s]) => {
+    const wrongCount = s.allWrong.length;
+    const totalActs  = 10; // rough estimate for progress
+    return `
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div>
+            <strong style="font-size:1.05rem;">${s.studentName}</strong>
+            <div style="margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;">
+              <span class="badge badge-${s.class}">${classLabel(s.class)}</span>
+              <span class="tag">Level ${s.level}</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:'Baloo 2',cursive;font-size:1.8rem;color:#EF5350;font-weight:800;">${wrongCount}</div>
+            <div style="font-size:0.78rem;color:var(--muted);">Wrong Activities</div>
+          </div>
+        </div>
+        ${s.allWrong.length ? `
+          <div class="section-label">Wrong Activities</div>
+          ${s.allWrong.map((w,i) => `
+            <div class="report-wrong-item">
+              <span>❌ Q${w.actIndex+1}: ${w.actLabel}</span>
+              <span class="tag">Page ${w.pageId?.slice(-4) || '—'}</span>
+            </div>
+          `).join('')}
+          <div style="margin-top:14px;text-align:right;">
+            <button class="btn btn-sun btn-sm" onclick="exportStudent('${sid}')">📥 Export CSV</button>
+          </div>
+        ` : `<p style="color:var(--grass);font-weight:700;">🌟 सभी activities सही हैं!</p>`}
+      </div>`;
+  }).join('');
+};
+
+window.exportStudent = async (studentId) => {
+  const snap = await get(ref(db, 'submissions'));
+  const subs = Object.values(snap.val() || {}).filter(s => s.studentId === studentId);
+  let csv = 'Student,Class,Level,Page,Activity Index,Activity\n';
+  subs.forEach(s => {
+    (s.wrongItems||[]).forEach(w => {
+      csv += `"${s.studentName}","${s.class}","${s.level}","${w.pageId}","${w.actIndex+1}","${w.actLabel}"\n`;
+    });
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `wrong_${studentId}.csv`; a.click();
+  showToast('CSV download हो गया! 📥','success');
+};
+
+// ─────────────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────────────
+(async () => {
+  // fill level dropdowns
+  fillLevelSelect('adminLevel');
+  fillLevelSelect('studentLevel');
+
+  // load admin form default
+  renderAdminLevels();
+
+  // check URL for parent form
+  if (location.search.includes('student=')) {
+    loadParentForm();
+  }
+
+  // pre-render students table
+  renderStudentsTable();
+})();
+</script>
+</body>
+</html>
